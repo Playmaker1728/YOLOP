@@ -1,17 +1,13 @@
+import sys,os
+import math
+BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(BASE)
+
 import torch
 from torch import tensor
 import torch.nn as nn
-import sys,os
-import math
-import sys
-sys.path.append(os.getcwd())
-#sys.path.append("lib/models")
-#sys.path.append("lib/utils")
-#sys.path.append("/workspace/wh/projects/DaChuang")
-sys.path.append(r"E:\YOLOP\YOLOP\lib\utils")
+
 from lib.utils import initialize_weights
-# from lib.models.common2 import DepthSeperabelConv2d as Conv
-# from lib.models.common2 import SPP, Bottleneck, BottleneckCSP, Focus, Concat, Detect
 from lib.models.common import Conv, SPP, Bottleneck, BottleneckCSP, Focus, Concat, Detect, SharpenConv
 from torch.nn import Upsample
 from lib.utils import check_anchor_order
