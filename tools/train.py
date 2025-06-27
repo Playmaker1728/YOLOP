@@ -3,13 +3,15 @@ import os, sys
 import math
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
+os.chdir(BASE_DIR)
 
 import pprint
 import time
 import torch
 import torch.nn.parallel
 from torch.nn.parallel import DistributedDataParallel as DDP
-from torch import amp
+# from torch import amp
+from torch.cuda import amp #适用于torch1.13.0+cu117
 import torch.distributed as dist
 import torch.backends.cudnn as cudnn
 import torch.optim
@@ -63,8 +65,8 @@ def parse_args():
 
     parser.add_argument('--sync-bn', action='store_true', help='use SyncBatchNorm, only available in DDP mode')
     parser.add_argument('--local_rank', type=int, default=-1, help='DDP parameter, do not modify')
-    parser.add_argument('--conf-thres', type=float, default=0.001, help='object confidence threshold')
-    parser.add_argument('--iou-thres', type=float, default=0.6, help='IOU threshold for NMS')
+    parser.add_argument('--conf-thres', type=float, default=0.5, help='object confidence threshold')
+    parser.add_argument('--iou-thres', type=float, default=0.5, help='IOU threshold for NMS')
     args = parser.parse_args()
 
     return args
@@ -313,7 +315,8 @@ def main():
 
     # training
     num_warmup = max(round(cfg.TRAIN.WARMUP_EPOCHS * num_batch), 1000)
-    scaler = amp.GradScaler('cuda',enabled=device.type != 'cpu')
+    # scaler = amp.GradScaler('cuda',enabled=device.type != 'cpu')
+    scaler = amp.GradScaler(enabled=device.type != 'cpu')
     print('=> start training...')
     for epoch in range(begin_epoch+1, cfg.TRAIN.END_EPOCH+1):
         if rank != -1:
